@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const formatPrice = ({ amount, currency, quantity }) => {
-  const numberFormat = new Intl.NumberFormat('en-US', {
-    style: 'currency',
+  const numberFormat = new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency,
-    currencyDisplay: 'symbol',
+    currencyDisplay: "symbol",
   });
   const parts = numberFormat.formatToParts(amount);
   let zeroDecimalCurrency = true;
   for (let part of parts) {
-    if (part.type === 'decimal') {
+    if (part.type === "decimal") {
       zeroDecimalCurrency = false;
     }
   }
@@ -21,15 +21,14 @@ const formatPrice = ({ amount, currency, quantity }) => {
 const Checkout = () => {
   const [quantity, setQuantity] = useState(1);
   const [amount, setAmount] = useState(0);
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState("USD");
 
   useEffect(() => {
     async function fetchConfig() {
       // Fetch config from our backend.
-      const {
-        unitAmount,
-        currency
-      } = await fetch('/config').then(r => r.json());
+      const { unitAmount, currency } = await fetch("/config-price", {
+        method: "POST",
+      }).then((r) => r.json());
       setAmount(unitAmount);
       setCurrency(currency);
     }
@@ -82,8 +81,16 @@ const Checkout = () => {
             </div>
             <p className="sr-legal-text">Number of copies (max 10)</p>
 
+            <input
+                type="number"
+                id="quantity-input"
+                value={amount * quantity}
+                name="amount"
+                readOnly
+              />
+
             <button role="link" id="submit" type="submit">
-              Buy {formatPrice({amount, currency, quantity})}
+              Buy ${amount}
             </button>
           </form>
         </section>
